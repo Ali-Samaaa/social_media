@@ -1,5 +1,6 @@
 from django import forms
-from django.core.exceptions import ValidationError
+from django.core.exceptions import ValidationError,
+from django.contrib.auth.models import User
 
 
 class UserRegistrationForm(forms.Form):
@@ -8,6 +9,11 @@ class UserRegistrationForm(forms.Form):
     password1 = forms.CharField(label='password', widget=forms.PasswordInput(attrs={'class': 'form-control'}))
     password2 = forms.CharField(label='confirm password', widget=forms.PasswordInput(attrs={'class': 'form-control'}))
 
+    def clean_username(self):
+        username = self.cleaned_data['username']
+        user = User.objects.filter(username=username)
+        if user:
+            raise
     def clean(self):
         cd = super().clean()
         p1 = cd.get('password1')
