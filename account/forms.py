@@ -1,5 +1,5 @@
 from django import forms
-from django.core.exceptions import ValidationError,
+from django.core.exceptions import ValidationError
 from django.contrib.auth.models import User
 
 
@@ -13,7 +13,16 @@ class UserRegistrationForm(forms.Form):
         username = self.cleaned_data['username']
         user = User.objects.filter(username=username)
         if user:
-            raise
+            raise ValidationError('This username already exists')
+        return user
+
+    def clean_email(self):
+        email = self.cleaned_data['email']
+        user = User.objects.filter(email=email)
+        if user:
+            raise ValidationError('This email already exists')
+        return user
+
     def clean(self):
         cd = super().clean()
         p1 = cd.get('password1')
