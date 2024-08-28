@@ -13,7 +13,7 @@ class UserRegistrationForm(forms.Form):
         username = self.cleaned_data['username']
         user = User.objects.filter(username=username)
         if user:
-            raise ValidationError('This username already exists')
+            raise ValidationError("This username already exists")
         return user
 
     def clean_email(self):
