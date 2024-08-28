@@ -3,7 +3,7 @@ from django.views import View
 from .forms import UserRegistrationForm, UserLoginForm
 from django.contrib.auth.models import User
 from django.contrib import messages
-from django.contrib.auth import authenticate, login
+from django.contrib.auth import authenticate, login, logout
 
 
 class UserRegisterView(View):
@@ -26,10 +26,11 @@ class UserRegisterView(View):
 
 class UserLoginView(View):
     form_class = UserLoginForm
-    template_name =
+    template_name = 'account/login.html'
+
     def get(self, request):
         form = self.form_class()
-        return render(request, 'account/login.html', {'form': form})
+        return render(request, self.template_name, {'form': form})
 
     def post(self, request):
         form = self.form_class(request.POST)
@@ -41,5 +42,12 @@ class UserLoginView(View):
                 messages.success(request, 'you login successfully', 'success')
                 return redirect('home:home')
             messages.error(request, 'your username or password is wrong', 'danger')
-            return render(request, 'account/login.html', {'form': form})
-        return render(request, 'account/login.html', {'form': form})
+        return render(request, self.template_name, {'form': form})
+
+
+class UserLogoutView(View):
+
+    def get(self, request):
+        logout(request)
+        messages.success(request, 'you logout successfully', 'success')
+        return redirect('home:home')
