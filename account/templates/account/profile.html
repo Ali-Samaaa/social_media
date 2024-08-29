@@ -2,9 +2,6 @@
 
 {% block content %}
     <h2 class="text-center">{{ user.username }}</h2>
-    {% if request.user.id == post.user.id %}
-        <a href="{% url 'home:post_delete' post_id %}" class="btn btn-danger">Delete</a>
-    {% endif %}
     <div class="card">
         {% for post in posts %}
             <a class="card-body" href="{{ post.get_absolute_url }}">{{ post.body|truncatewords:8 }}</a>
