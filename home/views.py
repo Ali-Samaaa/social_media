@@ -2,7 +2,7 @@ from django.shortcuts import render, redirect
 from django.views import View
 from .models import Post
 from django.contrib import messages
-from .forms import PostUpdateForm
+from .forms import PostCreateUpdateForm
 from django.contrib.auth.models import User
 from django.utils.text import slugify
 from django.contrib.auth.mixins import LoginRequiredMixin
@@ -32,7 +32,7 @@ class PostDeleteView(View):
 
 
 class PostUpdateView(LoginRequiredMixin, View):
-    form_class = PostUpdateForm
+    form_class = PostCreateUpdateForm
 
     def setup(self, request, *args, **kwargs):
         self.post_instance = Post.objects.get(pk=kwargs['post_id'])
@@ -59,3 +59,21 @@ class PostUpdateView(LoginRequiredMixin, View):
             form.save()
             messages.success(request, 'you updated successfully', 'success')
             return redirect('home:post_detail', post.id, post.slug)
+
+
+class PostCreateView(LoginRequiredMixin, View):
+    form_class = PostCreateUpdateForm
+
+    def get(self, request):
+        form = self.form_class()
+        return render(request, 'home/create.html', {'form': form})
+
+    def post(self, request):
+        form = self.form_class(request.POST)
+        if form.is_valid():
+            new_post = form.save(commit=False)
+            new_post.slug = slugify(form.cleaned_data['body'][:30])
+            new_post.user = request.user
+            form.save()
+            messages.success(request, 'you created a post', 'success')
+            return redirect('home:post_detail', new_post.id, new_post.slug)    # urls.post_detail need id and slug
