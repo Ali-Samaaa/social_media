@@ -1,6 +1,6 @@
 from django.shortcuts import render, redirect
 from django.views import View
-from .models import Post
+from .models import Post, Comment
 from django.contrib import messages
 from .forms import PostCreateUpdateForm
 from django.contrib.auth.models import User
@@ -17,7 +17,8 @@ class HomeView(View):
 class PostDetailView(View):
     def get(self, request, post_id, post_slug):
         post = Post.objects.get(id=post_id, slug=post_slug)
-        return render(request, 'home/detail.html', {'post': post})
+        comments = post.pcomment.filter(is_reply=False)
+        return render(request, 'home/detail.html', {'post': post, 'comments': comments})
 
 
 class PostDeleteView(View):
