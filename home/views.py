@@ -1,6 +1,6 @@
 from django.shortcuts import render, redirect
 from django.views import View
-from .models import Post, Comment
+from .models import Post, Comment, Vote
 from django.contrib import messages
 from .forms import PostCreateUpdateForm, CommentCreateForm, CommentReplyForm
 from django.contrib.auth.models import User
@@ -26,8 +26,11 @@ class PostDetailView(View):
 
     def get(self, request, *args, **kwargs):
         comments = self.post_instance.pcomment.filter(is_reply=False)
+        can_like = False
+        if request.user.is_authenticated and self.post_instance.user_can_like(request.user):
+            can_like = True
         return render(request, 'home/detail.html', {'post': self.post_instance, 'comments': comments
-                                                    , 'form': self.form_class, 'from_reply': self.form_reply_class})
+                , 'form': self.form_class, 'from_reply': self.form_reply_class, 'can_like': can_like})
 
     @method_decorator(login_required)
     def post(self, request, *args, **kwargs):
@@ -115,4 +118,17 @@ class PostReplyView(LoginRequiredMixin, View):
             reply.is_reply = True
             form.save()
             messages.success(request, 'you comment submitted successfully', 'success')
+        return redirect('home:post_detail', post.id, post.slug)
+
+
+class PostLikeView(LoginRequiredMixin, View):
+
+    def get(self, request, post_id):
+        post = Post.objects.get(id=post_id)
+        like = Vote.objects.filter(user=request.user, post=post)
+        if like.exists():
+            messages.error(request, 'you already like this post', 'danger')
+        else:
+            Vote.objects.create(user=request.user, post=post)
+            messages.success(request, 'you like this post successfully', 'success')
         return redirect('home:post_detail', post.id, post.slug)
