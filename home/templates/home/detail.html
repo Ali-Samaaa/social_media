@@ -15,7 +15,7 @@
             {% csrf_token %}
             {{ form.as_p }}
             <input type="submit" value="Submit">
-        </form>
+        </form><br/>
     {% endif %}
 
     <hr/>
@@ -23,7 +23,17 @@
         <div class="card bg-dark text-white">
             <P class="card-header">{{ comment.user }} | {{ comment.created }}</P>
             <p class="card-body">{{ comment.body }}</p>
-        </div>
+            <form action="{% url 'home:post_reply' post.id comment.id %}" method="post">
+                {% csrf_token %}
+                {{ form.as_p }}
+                <input type="submit" value="Submit">
+            </form>
+            {% with replies=comment.rcomment.all %}
+                {% for reply in replies %}
+                    <P class="bg-primary p-3 m-2">{{ reply }}</P>
+                {% endfor %}
+            {% endwith %}
+        </div><br/>
     {% empty %}
         <p>No comment yet!</p>
     {% endfor %}
