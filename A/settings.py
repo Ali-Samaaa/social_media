@@ -135,8 +135,8 @@ LOGIN_URL = '/account/login/'
 
 EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
 EMAIL_HOST = 'smtp.gmail.com'
-EMAIL_HOST_USER = 'imaiks.2002@gmail.com'
+EMAIL_HOST_USER = '{username}'
 EMAIL_PORT = 587
-EMAIL_HOST_PASSWORD = 'msepehvlmlcyerhr'
+EMAIL_HOST_PASSWORD = '{password}'
 EMAIL_USE_TLS = True
 DEFAULT_FROM_EMAIL = 'khode stackoverflow'
